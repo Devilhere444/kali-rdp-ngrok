@@ -6,9 +6,9 @@ This Docker container provides a Kali Linux environment with RDP access via ngro
 
 - Kali Linux Rolling base
 - XFCE4 desktop environment
-- XRDP server for remote desktop access
+- XRDP server with Xvnc (TigerVNC) backend for reliable containerized RDP access
 - Ngrok tunnel for external access
-- Pre-configured to prevent blue screen issues
+- Robust configuration to prevent blue screen and connection issues
 
 ## Credentials
 
@@ -50,13 +50,30 @@ The startup script will automatically display the RDP connection details includi
 
 4. Connect via RDP using the displayed host and port with the credentials above.
 
-## Blue Screen Fix
+## XRDP Backend Configuration
 
-The blue screen issue in RDP has been resolved by:
-- Configuring proper XRDP startwm.sh script
-- Setting up .xsession for XFCE4
-- Unsetting conflicting DBUS environment variables
-- Properly starting the XFCE4 session manager
+This container now uses **Xvnc (TigerVNC)** as the XRDP backend instead of Xorg, which provides:
+- Better stability in containerized/headless environments
+- More reliable session handling without systemd
+- Reduced "blue screen" and blank desktop issues
+
+The configuration includes:
+- **sesman-Xvnc** session type as default in `/etc/xrdp/xrdp.ini`
+- Proper Xvnc parameters in `/etc/xrdp/sesman.ini` (localhost-only, no TCP listening)
+- Robust `/etc/xrdp/startwm.sh` with correct XDG environment variables
+- User `.xsession` configuration for XFCE4 desktop environment
+- All services start via `/etc/init.d/xrdp` (no systemd required)
+
+### Connection Details
+
+After deployment:
+1. Check the container logs for the ngrok tunnel URL
+2. Use any RDP client to connect (example: Microsoft Remote Desktop, Remmina)
+3. Connect to the provided host:port from the logs
+4. Login with:
+   - **Username**: `root`
+   - **Password**: `Devil`
+5. The XFCE desktop environment will start automatically
 
 ## Notes
 
