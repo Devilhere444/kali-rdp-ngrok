@@ -24,12 +24,11 @@ RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | gpg --dearmor -o /u
     echo "deb [signed-by=/usr/share/keyrings/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list && \
     apt update && apt install -y ngrok
 
-# Copy ngrok config
+# Copy ngrok config and startup script
 COPY ngrok.yml /root/.ngrok2/ngrok.yml
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 3389
 
-CMD service dbus start && \
-    service xrdp start && \
-    ngrok start --all --config /root/.ngrok2/ngrok.yml & \
-    tail -f /dev/null
+CMD ["/usr/local/bin/start.sh"]
