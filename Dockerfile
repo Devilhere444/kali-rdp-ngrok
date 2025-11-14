@@ -11,6 +11,12 @@ RUN curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | gpg --dearmor -o /u
     echo "deb [signed-by=/usr/share/keyrings/ngrok.gpg] https://ngrok-agent.s3.amazonaws.com buster main" | tee /etc/apt/sources.list.d/ngrok.list && \
     apt update && apt install -y ngrok
 
+# Configure xrdp to use XFCE4
+RUN echo "startxfce4" > /root/.xsession && \
+    chmod +x /root/.xsession && \
+    echo "exec startxfce4" > /etc/xrdp/startwm.sh && \
+    chmod +x /etc/xrdp/startwm.sh
+
 # Copy ngrok config
 COPY ngrok.yml /root/.ngrok2/ngrok.yml
 
